@@ -17,6 +17,7 @@ import { Button,Accordion,Panel,Modal,Input,ButtonToolbar,ButtonInput,ListGroup,
  ListGroupItem = ReactBootstrap.ListGroupItem
  */
 
+
 class App extends React.Component {
     constructor(props) {
         super(props);
@@ -25,13 +26,35 @@ class App extends React.Component {
             showEditModal: false,
             produits: [],
             libelle: "",
+            image: {file : "", imagePreviewUrl: ""},
             matierePremiers: "",
             prixs:"",
             editLibelleInputVal: "",
+            editImageInputVal: {file : "", imagePreviewUrl: ""},
             editMatierePremiersInputVal: "",
             editPrixsInputVal: "",
-            produitToEdit: { libelle: "", matierePremiers: "",prixs: "" }
+            produitToEdit: { libelle: "", image: "", matierePremiers: "",prixs: "" }
         };
+    }
+
+    uploadFile(e){
+        let reader = new FileReader();
+        let file = e.target.files[0];
+        reader.onloadend = () => {
+            let image = {file : file, imagePreviewUrl: reader.result};
+            this.setState({ image: image });
+        }
+        reader.readAsDataURL(file);
+    }
+
+    uploadEditFile(e){
+        let reader = new FileReader();
+        let file = e.target.files[0];
+        reader.onloadend = () => {
+            let image = {file : file, imagePreviewUrl: reader.result};
+            this.setState({ editImageInputVal: image });
+        }
+        reader.readAsDataURL(file);
     }
 
     componentDidMount() {
@@ -61,6 +84,11 @@ class App extends React.Component {
         this.setState({ libelle: e.target.value });
     }
 
+    handleImageInputChange(e) {
+        this.uploadFile(e);
+        //this.setState({ image: e.target.value });
+    }
+
     handleMatierePremiersInputChange(e) {
         this.setState({ matierePremiers: e.target.value });
     }
@@ -71,6 +99,11 @@ class App extends React.Component {
 
     handleLibelleEditInputChange(value) {
         this.setState({ editLibelleInputVal: value });
+    }
+
+    handleImageEditInputChange(e) {
+        this.uploadEditFile(e);
+        //this.setState({ editImageInputVal: value });
     }
 
     handleMatierePremiersEditInputChange(value) {
@@ -85,10 +118,11 @@ class App extends React.Component {
         event.preventDefault();
 
         let libelle = this.state.libelle,
+            image = this.state.image,
             matierePremiers = this.state.matierePremiers,
             prixs = this.state.prixs,
             produits = this.state.produits;
-        if (!libelle || !matierePremiers || !prixs) {
+        if (!libelle || !image || !matierePremiers || !prixs) {
             return;
         }
 
@@ -98,7 +132,7 @@ class App extends React.Component {
         console.log("etape 1 : produits : " +  string );
 
         let matiereArr = matierePremiers.split(",");
-        produits.push({ libelle: libelle, matierePremiers: matiereArr, prixs: prixs });
+        produits.push({ libelle: libelle, image: image, matierePremiers: matiereArr, prixs: prixs });
 
         string = produits.map((textListe)=>{
             return   textListe.libelle + " , ";
@@ -124,6 +158,7 @@ class App extends React.Component {
         event.preventDefault();
         if (
             this.state.editLibelleInputVal === "" &&
+            this.state.editImageInputVal.imagePreviewUrl === "" &&
             this.state.editMatierePremiersInputVal === "" &&
             this.state.editPrixsInputVal === ""
         ) {
@@ -132,8 +167,11 @@ class App extends React.Component {
         let produits = this.state.produits;
         produits.map((produit, index) => {
             if (produit.libelle === this.state.produitToEdit.libelle) {
-                if (this.state.editLibelle !== "") {
+                if (this.state.editLibelleInputVal !== "") {
                     produit.libelle = this.state.editLibelleInputVal;
+                }
+                if (this.state.editImageInputVal.imagePreviewUrl !== "") {
+                    produit.image = this.state.editImageInputVal;
                 }
                 if (this.state.editMatierePremiersInputVal !== "") {
                     let matiereArr = this.state.editMatierePremiersInputVal.split(",");
@@ -164,6 +202,7 @@ class App extends React.Component {
                             closeModal={this.closeModal.bind(this)}
                             handleSubmit={this.handleFormSubmit.bind(this)}
                             handleLibelleInputChange={this.handleLibelleInputChange.bind(this)}
+                            handleImageInputChange={this.handleImageInputChange.bind(this)}
                             handleMatierePremiersInputChange={this.handleMatierePremiersInputChange.bind(this)}
                             handlePrixsInputChange={this.handlePrixsInputChange.bind(this)}
                         />
@@ -173,6 +212,7 @@ class App extends React.Component {
                             closeModal={this.closeEditModal.bind(this)}
                             handleSubmit={this.handleEditFormSubmit.bind(this)}
                             handleLibelleEditInputChange={this.handleLibelleEditInputChange.bind(this)}
+                            handleImageEditInputChange={this.handleImageEditInputChange.bind(this)}
                             handleMatierePremiersEditInputChange={this.handleMatierePremiersEditInputChange.bind(this)}
                             handlePrixsEditInputChange={this.handlePrixsEditInputChange.bind(this)}
                             produit={this.state.produitToEdit}
@@ -182,6 +222,7 @@ class App extends React.Component {
                             handleDeleteProduit={this.handleDeleteProduit.bind(this)}
                             handleOpenEditModal={this.openEditModal.bind(this)}
                             editLibelleInputVal={this.state.editLibelleInputVal}
+                            editImageInputVal={this.state.editImageInputVal}
                             editMatierePremiersInputVal={this.state.editMatierePremiersInputVal}
                             editPrixsInputVal={this.state.editPrixsInputVal}
                         />
@@ -206,10 +247,13 @@ class ProduitList extends React.Component {
     }
     render() {
         let produits = this.props.produits.map((produit, index) => {
+            var titre = "Produit : " + produit.libelle ;
             return (
-                <Panel header={produit.libelle} eventKey={index}>
-                    <MatierePremiersList matierePremiers={produit.matierePremiers} /><br></br>
-                    <Panel> {produit.prixs} </Panel>
+                <Panel header={titre} eventKey={index}>
+                    <Panel><img src={produit.image.imagePreviewUrl} alt="produit" /> </Panel>
+                    <div> Description :  <MatierePremiersList matierePremiers={produit.matierePremiers} /> </div>
+                    <br></br>
+                    <Panel> Prix : {produit.prixs} </Panel>
                     <ButtonToolbar>
                         <Button
                             bsStyle="danger"
@@ -280,8 +324,14 @@ class AddProduitForm extends React.Component {
                         <Input
                             type="text"
                             label="Prix"
-                            placeholder="milk,sugar,flour,butter,blueberries"
+                            placeholder="(number svp)"
                             onChange={this.props.handlePrixsInputChange}
+                        />
+                        <Input
+                            type="file"
+                            label="Image"
+                            placeholder="format(PNG,JPEG)"
+                            onChange={this.props.handleImageInputChange}
                         />
                         <ButtonInput type="submit" value="Ajouter" />
                     </form>
@@ -298,11 +348,22 @@ class EditProduitForm extends React.Component {
     handleLibelleEditInputChange(e) {
         this.props.handleLibelleEditInputChange(e.target.value);
     }
+    handleImageEditInputChange(e) {
+        this.props.handleImageEditInputChange(e);
+    }
     handleMatierePremiersEditInputChange(e) {
         this.props.handleMatierePremiersEditInputChange(e.target.value);
     }
     handlePrixsEditInputChange(e) {
         this.props.handlePrixsEditInputChange(e.target.value);
+    }
+    getFileURL(value){
+        if(!value){
+            return
+        }else{
+            return value.imagePreviewUrl;
+        }
+
     }
     render() {
         return (
@@ -335,6 +396,14 @@ class EditProduitForm extends React.Component {
                             value={this.props.editPrixsInputVal}
                             onChange={this.handlePrixsEditInputChange.bind(this)}
                         />
+                        <Panel><img src={this.props.produit.image.imagePreviewUrl} alt="produit" /> </Panel>
+                        <Input
+                            type="file"
+                            label="Image"
+                            placeholder="format(PNG,JPEG)"
+                            value = {this.getFileURL(this.props.editImageInputVal)}
+                            onChange={this.handleImageEditInputChange.bind(this)}
+                        />
 
                         <ButtonInput type="submit" value="enregistrer" />
                     </form>
@@ -346,5 +415,6 @@ class EditProduitForm extends React.Component {
         );
     }
 }
+
 
 export default App;

@@ -20,8 +20,47 @@
       }
     </style>
     <title>Satistique</title>
+
+
+    <!-- script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.7.5/js/bootstrap-select.min.js" script -->
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+        google.load("visualization", "1", {packages:["corechart"]});
+        google.setOnLoadCallback(drawChart);
+        function drawChart() {
+            var data = google.visualization.arrayToDataTable([
+                ['Task', 'Hours per Day'],
+                ['React',     25],
+                ['AngularJS', 25],
+                ['Node.js',   25],
+                ['jQuery',    25],
+                ['Ruby',      20]
+            ]);
+
+            var options = {
+                title: 'Features',
+                is3D: true,
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('piechart_3d'));
+            chart.draw(data, options);
+        }
+    </script>
+
   </head>
   <body>
     <div id="root"></div>
+    </br>
+    </br>
+    </br>
+    <div id="js-app"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/2.4.2/lib/alea.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.1.0/d3.min.js"></script>
+
+    <script src="https://codepen.io/clindsey/pen/GqXbJL.js"></script> <!-- animated-scale-wrapper-1.0.0 -->
+    <script src="https://codepen.io/clindsey/pen/OXoYBq.js"></script> <!-- animated-data-wrapper-1.0.0 -->
+    <script src="https://codepen.io/clindsey/pen/RRYmYY.js"></script> <!-- react-pie-chart-animated-1.0.0 -->
+    <script src="https://codepen.io/clindsey/pen/pbOXgN.js"></script> <!-- react-bar-chart-animated-1.0.0 -->
   </body>
 </html>
