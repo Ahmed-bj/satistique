@@ -3,9 +3,10 @@
  */
 
 import React from 'react';
-import { Button,Accordion,Panel,Modal,Input,ButtonToolbar,ButtonInput,ListGroup,ListGroupItem } from 'react-bootstrap';
+import * as ReactBootstrap  from 'react-bootstrap';
+import Satist from './Satist';
 
-/*
+
  const Button = ReactBootstrap.Button,
  Accordion = ReactBootstrap.Accordion,
  Panel = ReactBootstrap.Panel,
@@ -15,7 +16,7 @@ import { Button,Accordion,Panel,Modal,Input,ButtonToolbar,ButtonInput,ListGroup,
  ButtonInput = ReactBootstrap.ButtonInput,
  ListGroup = ReactBootstrap.ListGroup,
  ListGroupItem = ReactBootstrap.ListGroupItem
- */
+
 
 
 class App extends React.Component {
@@ -197,6 +198,14 @@ class App extends React.Component {
                 <div className="row">
                     <div className="col-md-12">
 
+                        <Button
+                            bsStyle="primary"
+                            bsSize="large"
+                            onClick={this.openModal.bind(this)}
+                        >
+                            Ajouter nouveau produit
+                        </Button>
+
                         <AddProduitForm
                             showModal={this.state.showModal}
                             closeModal={this.closeModal.bind(this)}
@@ -227,13 +236,8 @@ class App extends React.Component {
                             editPrixsInputVal={this.state.editPrixsInputVal}
                         />
 
-                        <Button
-                            bsStyle="primary"
-                            bsSize="large"
-                            onClick={this.openModal.bind(this)}
-                        >
-                            Ajouter nouveau produit
-                        </Button>
+                        <Satist data={this.state.produits} />
+
                     </div>
                 </div>
             </div>
